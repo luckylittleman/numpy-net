@@ -5,3 +5,15 @@ class Activation_ReLU:
      #calculate output from input
     self.inputs=inputs
     self.output=np.maximum(0,inputs)
+
+class Activation_Softmax:
+  def forward(self,inputs):
+    #1. get unnormalized probabilities
+    # we subtract the max value from each row to prevent overflow(e^100=inf)
+    # keepdims=True is essential so we can subtract a column vector from the input matrix    
+    exp_values=np.exp(inputs-np.max(inputs,axis=1,keepdims=True))
+
+    #2.normalize them for each sample
+    probabilities=exp_values/np.sum(exp_values,axis=1,keepdims=True)
+
+    self.output=probabilities
