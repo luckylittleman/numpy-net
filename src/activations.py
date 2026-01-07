@@ -6,6 +6,14 @@ class Activation_ReLU:
     self.inputs=inputs
     self.output=np.maximum(0,inputs)
 
+ def backward(self,dvalues):
+   #make a copy so we dont modify the original gradients
+   self.dinputs=dvalues.copy()
+   #zero out gradient where input values were negative
+   #logic:if the neuron was inactive (<=0), the derivative is 0.
+   self.dinputs[self.inputs<=0]=0
+   
+
 class Activation_Softmax:
   def forward(self,inputs):
     #1. get unnormalized probabilities
