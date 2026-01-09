@@ -54,3 +54,23 @@ for epoch in range(10001):
 
 print("=== Final Weights and Biases ===")
 print("\nFinal predictions:\n", loss_activation.output)
+
+# --- SAVE THE BRAIN ---
+import pickle
+
+print("\nSaving the brain...")
+
+# We only need to save the Weights and Biases
+# (The structure of the neurons is defined in code, but the 'knowledge' is in these numbers)
+saved_data = {
+    "dense1_weights": dense1.weights,
+    "dense1_biases": dense1.biases,
+    "dense2_weights": dense2.weights,
+    "dense2_biases": dense2.biases
+}
+
+# Write to a binary file named 'brain.pkl'
+with open('brain.pkl', 'wb') as f:
+    pickle.dump(saved_data, f)
+
+print("Brain successfully saved to 'brain.pkl'!")
