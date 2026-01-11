@@ -1,6 +1,6 @@
 import numpy as np
-from src.datasets import create_data_spiral # <--- New Import
-from src.layers import Layer_Dense
+from src.datasets import create_data_spiral 
+from src.layers import Layer_Dense, Layer_Dropout
 from src.activations import Activation_ReLU
 from src.loss import Activation_Softmax_Loss_CategoricalCrossentropy
 from src.optimizers import Optimizer_SGD
@@ -9,14 +9,18 @@ from src.optimizers import Optimizer_SGD
 # 1. Create Data
 X, y = create_data_spiral(samples=100, classes=3)
 
+X_test, y_test = create_data_spiral(samples=100, classes=3)
+
 # 2. Initialize Network - NOW WITH 2 HIDDEN LAYERS
 # Layer 1: Input (2) -> Hidden (64)
 dense1 = Layer_Dense(n_inputs=2, n_neurons=64) 
 activation1 = Activation_ReLU()
+dropout1 = Layer_Dropout(0.2)
 
 # Layer 2: Hidden (64) -> Hidden (64)  <--- NEW INTERMEDIATE LAYER
 dense2 = Layer_Dense(n_inputs=64, n_neurons=64) 
 activation2 = Activation_ReLU()
+dropout2 = Layer_Dropout(0.2)
 
 # Layer 3: Hidden (64) -> Output (3)   <--- OUTPUT LAYER
 dense3 = Layer_Dense(n_inputs=64, n_neurons=3)
@@ -32,13 +36,15 @@ for epoch in range(10001):
     # --- Forward Pass ---
     dense1.forward(X)
     activation1.forward(dense1.output)
+    dropout1.forward(activation1.output)
     
     # Pass through the NEW layer
-    dense2.forward(activation1.output)
+    dense2.forward(dropout1.output)
     activation2.forward(dense2.output)
+    dropout2.forward(activation2.output)
     
     # Output layer
-    dense3.forward(activation2.output)
+    dense3.forward(dropout2.output)
     
     loss = loss_activation.forward(dense3.output, y)
     
@@ -49,15 +55,34 @@ for epoch in range(10001):
     accuracy = np.mean(predictions == y)
 
     if epoch % 1000 == 0:
-        print(f'Epoch: {epoch}, Loss: {loss:.4f}, Accuracy: {accuracy:.4f}')
+        print(f'epoch: {epoch} Loss: {loss:.4f}, Accuracy: {accuracy:.4f}' )
 
-    # --- Backward Pass ---
+        #validation on the test results
+        # --- Validation Forward Pass ---
+        dense1.forward(X_test)
+        activation1.forward(dense1.output)
+        dense2.forward(activation1.output)
+        activation2.forward(dense2.output)
+        dense3.forward(activation2.output)
+        loss_test = loss_activation.forward(dense3.output, y_test)
+        predictions_test = np.argmax(loss_activation.output, axis=1)
+        if len(y_test.shape) == 2:
+            y_test = np.argmax(y_test, axis=1)
+        else:
+                y_test_inds = y_test
+        accuracy_test = np.mean(predictions_test == y_test)
+        print(f'--- Validation --- Loss: {loss_test:.4f}, Accuracy: {accuracy_test:.4f}' )
+   # --- Backward Pass ---
     loss_activation.backward(loss_activation.output, y)
-    dense3.backward(loss_activation.dinputs)      # Back from Output
-    activation2.backward(dense3.dinputs)          # Back through ReLU
-    dense2.backward(activation2.dinputs)          # Back through Hidden 2 (NEW)
-    activation1.backward(dense2.dinputs)          # Back through ReLU
-    dense1.backward(activation1.dinputs)          # Back through Hidden 1
+    dense3.backward(loss_activation.dinputs)
+    
+    dropout2.backward(dense3.dinputs)       # <--- Back through Dropout
+    activation2.backward(dropout2.dinputs)  # <--- Input from Dropout gradient
+    dense2.backward(activation2.dinputs)
+    
+    dropout1.backward(dense2.dinputs)       # <--- Back through Dropout
+    activation1.backward(dropout1.dinputs)  # <--- Input from Dropout gradient
+    dense1.backward(activation1.dinputs)
 
     # --- Optimization ---
     optimizer.update_params(dense1)
