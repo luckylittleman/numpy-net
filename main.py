@@ -4,6 +4,7 @@ from src.layers import Layer_Dense, Layer_Dropout
 from src.activations import Activation_ReLU
 from src.loss import Activation_Softmax_Loss_CategoricalCrossentropy
 from src.optimizers import Optimizer_SGD
+from src.optimizers import Optimizer_Adam
 
 
 # 1. Create Data
@@ -15,19 +16,19 @@ X_test, y_test = create_data_spiral(samples=100, classes=3)
 # Layer 1: Input (2) -> Hidden (64)
 dense1 = Layer_Dense(n_inputs=2, n_neurons=64) 
 activation1 = Activation_ReLU()
-dropout1 = Layer_Dropout(0.2)
+dropout1 = Layer_Dropout(0.1)
 
 # Layer 2: Hidden (64) -> Hidden (64)  <--- NEW INTERMEDIATE LAYER
 dense2 = Layer_Dense(n_inputs=64, n_neurons=64) 
 activation2 = Activation_ReLU()
-dropout2 = Layer_Dropout(0.2)
+dropout2 = Layer_Dropout(0.1)
 
 # Layer 3: Hidden (64) -> Output (3)   <--- OUTPUT LAYER
 dense3 = Layer_Dense(n_inputs=64, n_neurons=3)
 loss_activation = Activation_Softmax_Loss_CategoricalCrossentropy()
 
 # 3. Optimizer (Lower the rate slightly to 0.5 to be safe)
-optimizer = Optimizer_SGD(learning_rate=1.0) # Keep 1.0 or try 0.5 if unstable
+optimizer = Optimizer_Adam(learning_rate=0.01, decay=1e-5)
 
 # 4. Training Loop
 print("Starting Deep Training...")
@@ -85,9 +86,13 @@ for epoch in range(10001):
     dense1.backward(activation1.dinputs)
 
     # --- Optimization ---
+    optimizer.pre_update_params()#tells adam we are starting a new update
+
     optimizer.update_params(dense1)
     optimizer.update_params(dense2) # Update the new layer too!
     optimizer.update_params(dense3)
+
+    optimizer.pre_update_params() #this part tells adam we are done with this part
     # ... (Previous training loop code) ...
 # ... (Previous training loop code) ...
 
