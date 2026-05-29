@@ -39,8 +39,8 @@ optimization algorithm, featuring first and second-moment tracking, bias correct
 Prerequisites: Ensure you have Python 3.8+ installed on your system.
 
 1. Clone the Repository
-git clone https://github.com/yourusername/numpy-neural-network-scratch.git
-cd numpy-neural-network-scratch
+git clone https://github.com/luckylittleman/numpy-net.git
+cd numpy-net
 
 2. Set Up a Virtual Environment (Recommended)
 On Linux/macOS:
