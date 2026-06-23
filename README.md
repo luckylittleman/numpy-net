@@ -4,30 +4,28 @@ A lightweight, high-performance deep learning engine built entirely from scratch
 This project bypasses high-level frameworks like PyTorch or TensorFlow to implement core
 neural network mechanics—including matrix calculus, backpropagation, activation derivatives,
 and adaptive optimization—using raw matrix mathematics.
-The engine features an advanced Multi-Task Learning (MTL) architecture capable of outputting
-simultaneous classification and regression predictions from a shared hidden representation.
+The engine implements a simple NumPy-based classification network with dense, dropout, and
+activation layers built from scratch, along with manual optimizer and loss logic.
 
 �� Features
  Pure NumPy Implementation: All forward and backward passes are calculated using optimized
 matrix operations (np.dot, transpose manipulation).
- Multi-Task Learning Architecture: Features a split-head output layer that optimizes a joint loss
-function for concurrent categorical classification and continuous regression tasks.
- Custom Activation &amp; Derivative Layers: Manual implementations of ReLU (hidden layers),
-Sigmoid &amp; Softmax (output layers), featuring exact analytical gradients for stable
-backpropagation.
- Scratch Adam Optimizer: A native implementation of the Adam (Adaptive Moment Estimation)
-optimization algorithm, featuring first and second-moment tracking, bias correction, and decay.
- Evaluation Suite: Custom performance metrics including vector-mapped Mean Squared Error
-(MSE), Categorical Cross-Entropy, and exact tracking using np.argmax.
+ Single-Task Classification Architecture: Supports a feedforward network with a softmax output
+for categorical classification.
+ Custom Activation Layers: Manual implementations of ReLU and Softmax, featuring exact
+analytical gradients for stable backpropagation.
+ Scratch Adam and SGD Optimizers: Native implementations with first- and second-moment
+tracking, bias correction, and learning-rate decay support.
+ Evaluation Suite: Categorical Cross-Entropy loss and accuracy tracking using np.argmax.
 
 ��️ Project Structure
 ├── src/
 │   ├── __pycache__/
 │   ├── __init__.py      # Marks src as a Python package
-│   ├── activations.py   # ReLU, Sigmoid, Softmax, and their derivatives
+│   ├── activations.py   # ReLU and Softmax activation layers
 │   ├── datasets.py      # Data loading and synthetic generation utils
-│   ├── layers.py        # Dense layers and forward/backward mechanics
-│   ├── loss.py          # Multi-task loss functions (MSE + Cross-Entropy)
+│   ├── layers.py        # Dense and dropout layers with forward/backward mechanics
+│   ├── loss.py          # Categorical cross-entropy loss implementation
 │   └── optimizers.py    # Custom Adam and SGD optimization math
 ├── .gitignore           # Ignores __pycache__ and system files
 ├── brain.pkl            # Serialized trained neural network weights/parameters
